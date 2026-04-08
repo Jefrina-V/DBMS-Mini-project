@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Orders - EMart</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: #f0f4f8;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  .sidebar {
+    width: 220px;
+    background: white;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.06);
+    display: flex;
+    flex-direction: column;
+    padding: 28px 0;
+    position: fixed;
+    top: 0; left: 0;
+    height: 100vh;
+  }
+
+  .sidebar .brand {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1a1a1a;
+    padding: 0 24px 24px;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 16px;
+  }
+
+  .sidebar a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 24px;
+    font-size: 14px;
+    color: #666;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+    border-left: 3px solid transparent;
+  }
+
+  .sidebar a:hover,
+  .sidebar a.active {
+    background: #f0fdf9;
+    color: #1abc9c;
+    border-left-color: #1abc9c;
+  }
+
+  .navbar {
+    position: fixed;
+    top: 0;
+    left: 220px;
+    right: 0;
+    height: 60px;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;
+    padding: 0 28px;
+    z-index: 10;
+  }
+
+  .navbar h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a1a;
+  }
+
+  .main {
+    margin-left: 220px;
+    margin-top: 60px;
+    padding: 30px 28px;
+    flex: 1;
+  }
+
+  .table-card {
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead tr {
+    background: #f8fafb;
+    border-bottom: 2px solid #f0f0f0;
+  }
+
+  th {
+    padding: 13px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #999;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  td {
+    padding: 13px 16px;
+    font-size: 13px;
+    color: #444;
+    text-align: center;
+    border-bottom: 1px solid #f5f5f5;
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #fafffe; }
+
+  .delete-btn {
+    padding: 5px 12px;
+    border: none;
+    border-radius: 6px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    background: #fdecea;
+    color: #e74c3c;
+  }
+  .delete-btn:hover { background: #e74c3c; color: white; }
+
+  .total-bar {
+    background: white;
+    border-radius: 14px;
+    padding: 18px 24px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .total-bar span { font-size: 14px; color: #999; font-weight: 500; }
+  .total-bar strong { font-size: 18px; font-weight: 600; color: #1abc9c; }
+
+  .btn-row { display: flex; gap: 12px; }
+
+  .download-btn {
+    padding: 11px 22px;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    background: #1abc9c;
+    color: white;
+    transition: opacity 0.2s;
+  }
+  .download-btn:hover { opacity: 0.85; }
+
+  .empty {
+    text-align: center;
+    padding: 40px;
+    color: #bbb;
+    font-size: 14px;
+  }
+  .empty div { font-size: 36px; margin-bottom: 10px; }
+
+  .loading {
+    text-align: center;
+    padding: 40px;
+    color: #999;
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="brand">🛒 EMart</div>
+  <a href="dashboard.html">🏠 Dashboard</a>
+  <a href="products.html">📦 Products</a>
+  <a href="categories.html">📂 Categories</a>
+  <a href="add_product.html">➕ Add Product</a>
+  <a href="orders.html" class="active">🧾 Orders</a>
+  <a href="login.html">🔐 Login</a>
+  <a href="register.html">📝 Register</a>
+</div>
+
+<div class="navbar">
+  <h3>Orders</h3>
+</div>
+
+<div class="main">
+
+  <div class="total-bar">
+    <span>Grand Total</span>
+    <strong id="grandTotal">₹0</strong>
+  </div>
+
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>Total</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="orderTable">
+        <tr><td colspan="6"><div class="loading">⏳ Loading orders...</div></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="btn-row">
+    <button class="download-btn" onclick="downloadInvoice()">⬇ Download Invoice</button>
+  </div>
+
+</div>
+
+<script>
+let orders = [];
+
+// ✅ Fetch orders from MongoDB via API
+async function loadOrders() {
+  try {
+    const res = await fetch("http://localhost:5000/api/orders");
+    orders = await res.json();
+    displayOrders();
+  } catch (err) {
+    document.getElementById("orderTable").innerHTML = `
+      <tr><td colspan="6">
+        <div class="empty"><div>⚠️</div>Could not load orders. Is the server running?</div>
+      </td></tr>`;
+    console.error(err);
+  }
+}
+
+function displayOrders() {
+  const tbody = document.getElementById("orderTable");
+  let totalAmount = 0;
+
+  if (!orders.length) {
+    tbody.innerHTML = `
+      <tr><td colspan="6">
+        <div class="empty"><div>🧾</div>No orders yet</div>
+      </td></tr>`;
+    document.getElementById("grandTotal").textContent = "₹0";
+    return;
+  }
+
+  let html = "";
+  orders.forEach((order, i) => {
+    // Each order has a products array
+    order.products.forEach(p => {
+      const total = p.price * p.quantity;
+      totalAmount += total;
+      html += `
+        <tr>
+          <td>${p.name}</td>
+          <td>₹${p.price}</td>
+          <td>${p.quantity}</td>
+          <td>₹${total}</td>
+          <td>
+            <button class="delete-btn" onclick="deleteOrder('${order._id}')">🗑 Delete</button>
+          </td>
+        </tr>`;
+    });
+  });
+
+  tbody.innerHTML = html;
+  document.getElementById("grandTotal").textContent = "₹" + totalAmount;
+}
+
+// ✅ Delete order from MongoDB
+async function deleteOrder(id) {
+  if (!confirm("Delete this order?")) return;
+  try {
+    await fetch(`http://localhost:5000/api/orders/${id}`, { method: "DELETE" });
+    await loadOrders(); // Refresh
+  } catch (err) {
+    alert("Failed to delete. Try again.");
+  }
+}
+
+async function downloadInvoice() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  let y = 20;
+  doc.setFontSize(18);
+  doc.text("EMart Invoice", 70, 10);
+
+  doc.setFontSize(12);
+  doc.text("Product",  50, y);
+  doc.text("Price",   100, y);
+  doc.text("Qty",     130, y);
+  doc.text("Total",   160, y);
+  y += 10;
+
+  let grandTotal = 0;
+  orders.forEach(order => {
+    order.products.forEach(p => {
+      const total = p.price * p.quantity;
+      doc.text(p.name,                50, y);
+      doc.text("Rs." + p.price,      100, y);
+      doc.text(p.quantity.toString(), 130, y);
+      doc.text("Rs." + total,        160, y);
+      grandTotal += total;
+      y += 10;
+    });
+  });
+
+  y += 10;
+  doc.setFontSize(14);
+  doc.text("Grand Total: Rs." + grandTotal, 10, y);
+  doc.save("EMart_Invoice.pdf");
+}
+
+// Load on page start
+loadOrders();
+</script>
+
+</body>
+</html>

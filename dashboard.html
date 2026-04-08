@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Dashboard - EMart</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Poppins', sans-serif; background: #f0f4f8; display: flex; min-height: 100vh; }
+  .sidebar { width: 220px; background: white; box-shadow: 2px 0 10px rgba(0,0,0,0.06); display: flex; flex-direction: column; padding: 28px 0; position: fixed; top: 0; left: 0; height: 100vh; }
+  .sidebar .brand { font-size: 20px; font-weight: 600; color: #1a1a1a; padding: 0 24px 24px; border-bottom: 1px solid #f0f0f0; margin-bottom: 16px; }
+  .sidebar a { display: flex; align-items: center; gap: 10px; padding: 11px 24px; font-size: 14px; color: #666; text-decoration: none; transition: background 0.2s, color 0.2s; border-left: 3px solid transparent; }
+  .sidebar a:hover, .sidebar a.active { background: #f0fdf9; color: #1abc9c; border-left-color: #1abc9c; }
+  .logout-btn { margin: 16px 24px 0; padding: 10px; background: #1abc9c; color: white; border: none; border-radius: 8px; font-family: 'Poppins', sans-serif; font-size: 14px; cursor: pointer; transition: background 0.2s; }
+  .logout-btn:hover { background: #17a589; }
+  .navbar { position: fixed; top: 0; left: 220px; right: 0; height: 60px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; z-index: 10; }
+  .navbar h3 { font-size: 16px; font-weight: 600; color: #1a1a1a; }
+  .navbar p { font-size: 13px; color: #888; }
+  .main { margin-left: 220px; margin-top: 60px; padding: 30px 28px; flex: 1; }
+  .section-title { font-size: 14px; font-weight: 500; color: #999; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .card { background: white; border-radius: 14px; padding: 24px 22px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-left: 4px solid #1abc9c; }
+  .card .card-icon { font-size: 26px; margin-bottom: 12px; }
+  .card h3 { font-size: 13px; font-weight: 500; color: #999; margin-bottom: 8px; }
+  .card p { font-size: 28px; font-weight: 600; color: #1a1a1a; }
+  .card:nth-child(2) { border-left-color: #e67e22; }
+  .card:nth-child(3) { border-left-color: #3498db; }
+  .error-msg { margin-top: 20px; color: #e74c3c; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="brand">🛒 EMart</div>
+  <a href="dashboard.html" class="active">🏠 Dashboard</a>
+  <a href="products.html">📦 Products</a>
+  <a href="categories.html">📂 Categories</a>
+  <a href="add_product.html">➕ Add Product</a>
+  <a href="orders.html">🧾 Orders</a>
+  <a href="login.html">🔐 Login</a>
+  <a href="register.html">📝 Register</a>
+  <button class="logout-btn" onclick="logout()">Logout</button>
+</div>
+
+<div class="navbar">
+  <h3>Dashboard</h3>
+  <p id="welcomeMsg">Welcome 👋</p>
+</div>
+
+<div class="main">
+  <p class="section-title">Overview</p>
+
+  <div class="grid">
+    <div class="card">
+      <div class="card-icon">📦</div>
+      <h3>Total Products Added</h3>
+      <p id="totalProducts">...</p>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">🧮</div>
+      <h3>Total Quantity Sold</h3>
+      <p id="totalQuantity">...</p>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">💰</div>
+      <h3>Total Sales Amount</h3>
+      <p id="totalSales">...</p>
+    </div>
+  </div>
+
+  <p class="error-msg" id="errorMsg"></p>
+</div>
+
+<script>
+  // Show logged-in user name
+  const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser")) || null;
+  if (loggedInUser) {
+    document.getElementById("welcomeMsg").textContent = "Welcome, " + loggedInUser.username + " 👋";
+  }
+
+  // ✅ Fetch orders from MongoDB API and calculate stats
+  async function loadDashboard() {
+    try {
+      const res = await fetch("http://localhost:5000/api/orders");
+      if (!res.ok) throw new Error("Server error");
+
+      const orders = await res.json();
+
+      let totalProducts = orders.length;         // number of orders
+      let totalQuantity = 0;
+      let totalSales    = 0;
+
+      orders.forEach(order => {
+        // Sum up quantity from all products in each order
+        order.products.forEach(p => {
+          totalQuantity += p.quantity || 0;
+        });
+        // Sum up total amount
+        totalSales += order.totalAmount || 0;
+      });
+
+      document.getElementById("totalProducts").textContent = totalProducts;
+      document.getElementById("totalQuantity").textContent = totalQuantity;
+      document.getElementById("totalSales").textContent    = "₹" + totalSales.toLocaleString("en-IN");
+
+    } catch (err) {
+      document.getElementById("totalProducts").textContent = "0";
+      document.getElementById("totalQuantity").textContent = "0";
+      document.getElementById("totalSales").textContent    = "₹0";
+      document.getElementById("errorMsg").textContent      = "❌ Could not load data. Make sure server is running on port 5000.";
+    }
+  }
+
+  function logout() {
+    localStorage.removeItem("loggedInUser");
+    window.location.href = "login.html";
+  }
+
+  // Load on page open
+  loadDashboard();
+</script>
+</body>
+</html>

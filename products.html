@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Products - EMart</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: #f0f4f8;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  
+  .sidebar {
+    width: 220px;
+    background: white;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.06);
+    display: flex;
+    flex-direction: column;
+    padding: 28px 0;
+    position: fixed;
+    top: 0; left: 0;
+    height: 100vh;
+  }
+
+  .sidebar .brand {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1a1a1a;
+    padding: 0 24px 24px;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 16px;
+  }
+
+  .sidebar a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 24px;
+    font-size: 14px;
+    color: #666;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+    border-left: 3px solid transparent;
+  }
+
+  .sidebar a:hover,
+  .sidebar a.active {
+    background: #f0fdf9;
+    color: #1abc9c;
+    border-left-color: #1abc9c;
+  }
+
+  
+  .navbar {
+    position: fixed;
+    top: 0;
+    left: 220px;
+    right: 0;
+    height: 60px;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    z-index: 10;
+  }
+
+  .navbar h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a1a;
+  }
+
+  
+  .navbar input {
+    padding: 8px 14px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    outline: none;
+    width: 200px;
+    transition: border-color 0.2s;
+  }
+  .navbar input:focus { border-color: #1abc9c; }
+
+ 
+  .main {
+    margin-left: 220px;
+    margin-top: 60px;
+    padding: 28px;
+    flex: 1;
+  }
+
+  
+  .category-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 28px 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .category-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e8e8e8;
+    margin-left: 8px;
+  }
+
+  
+  .product-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .product-card {
+    width: 150px;
+    background: white;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .product-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  }
+
+  .product-card img {
+    width: 100%;
+    height: 110px;
+    object-fit: cover;
+    border-radius: 8px;
+    background: #f0f4f8;
+  }
+
+  .product-card h4 {
+    font-size: 13px;
+    font-weight: 500;
+    color: #333;
+    margin-top: 8px;
+  }
+
+  .product-card .price {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1abc9c;
+    margin-top: 4px;
+  }
+
+  
+  .product-card.hidden { display: none; }
+</style>
+</head>
+<body>
+
+
+<div class="sidebar">
+  <div class="brand">🛒 EMart</div>
+  <a href="dashboard.html">🏠 Dashboard</a>
+  <a href="products.html" class="active">📦 Products</a>
+  <a href="categories.html">📂 Categories</a>
+  <a href="add_product.html">➕ Add Product</a>
+  <a href="orders.html">🧾 Orders</a>
+  <a href="login.html">🔐 Login</a>
+  <a href="register.html">📝 Register</a>
+</div>
+
+
+<div class="navbar">
+  <h3>Products</h3>
+  <input type="text" id="searchInput" placeholder="🔍 Search products..." oninput="filterProducts()">
+</div>
+
+
+<div class="main" id="mainContent"></div>
+
+<script>
+const products = [
+  {name:"Coke", category:"🥤 Beverages", img:"image/cokee.jpeg", price:40},
+  {name:"Pepsi", category:"🥤 Beverages", img:"image/pepsi.jpg", price:40},
+  {name:"Sprite", category:"🥤 Beverages", img:"image/spritee.jpg", price:40},
+  {name:"Fanta", category:"🥤 Beverages", img:"image/fanta.jpeg", price:40},
+  {name:"Red Bull", category:"🥤 Beverages", img:"image/redbull.jpg", price:125},
+  {name:"Coffee", category:"🥤 Beverages", img:"image/coffee.jpg", price:60},
+  {name:"Tea", category:"🥤 Beverages", img:"image/tea.jpg", price:20},
+  {name:"Juice", category:"🥤 Beverages", img:"image/juice.jpg", price:50},
+  {name:"Milkshake", category:"🥤 Beverages", img:"image/Milkshake.jpg", price:80},
+
+  {name:"Milk", category:"🥛 Dairy", img:"image/Milk.jpg", price:25},
+  {name:"Butter", category:"🥛 Dairy", img:"image/butter.jpg", price:55},
+  {name:"Cheese", category:"🥛 Dairy", img:"image/Cheese.jpg", price:90},
+  {name:"Paneer", category:"🥛 Dairy", img:"image/paneer.jpg", price:80},
+  {name:"Curd", category:"🥛 Dairy", img:"image/curd.jpg", price:30},
+  {name:"Ice Cream", category:"🥛 Dairy", img:"image/icecream.jpeg", price:60},
+  {name:"Cream", category:"🥛 Dairy", img:"image/cream.jpg", price:45},
+  {name:"Lassi", category:"🥛 Dairy", img:"image/lassi.jpg", price:35},
+  {name:"Buttermilk", category:"🥛 Dairy", img:"image/buttermilk.jpg", price:20},
+  {name:"Flavored Milk", category:"🥛 Dairy", img:"image/f-milk.jpg", price:30},
+
+  {name:"Apple", category:"🍎 Fruits", img:"image/apple.jpg", price:120},
+  {name:"Banana", category:"🍎 Fruits", img:"image/banana.jpg", price:30},
+  {name:"Mango", category:"🍎 Fruits", img:"image/mango.jpg", price:80},
+  {name:"Orange", category:"🍎 Fruits", img:"image/orange.jpg", price:60},
+  {name:"Grapes", category:"🍎 Fruits", img:"image/grapes.jpg", price:70},
+  {name:"Pineapple", category:"🍎 Fruits", img:"image/pineapple.jpg", price:50},
+  {name:"Strawberry", category:"🍎 Fruits", img:"image/strawberry.jpg", price:100},
+  {name:"Watermelon", category:"🍎 Fruits", img:"image/watermelon.jpg", price:40},
+  {name:"Papaya", category:"🍎 Fruits", img:"image/pappaya.jpg", price:35},
+  {name:"Kiwi", category:"🍎 Fruits", img:"image/Kiwi.png", price:150},
+
+  {name:"Carrot", category:"🥕 Vegetables", img:"image/carrot.jpg", price:30},
+  {name:"Tomato", category:"🥕 Vegetables", img:"image/tomato.jpg", price:25},
+  {name:"Potato", category:"🥕 Vegetables", img:"image/potato.jpg", price:20},
+  {name:"Onion", category:"🥕 Vegetables", img:"image/onion.jpg", price:30},
+  {name:"Cabbage", category:"🥕 Vegetables", img:"image/cabbage.jpg", price:25},
+  {name:"Spinach", category:"🥕 Vegetables", img:"image/spinach.jpg", price:20},
+  {name:"Beans", category:"🥕 Vegetables", img:"image/beans.jpg", price:35},
+  {name:"Brinjal", category:"🥕 Vegetables", img:"image/brinjal.jpg", price:25},
+  {name:"Cauliflower", category:"🥕 Vegetables", img:"image/cauliflower.jpg", price:30},
+  {name:"Capsicum", category:"🥕 Vegetables", img:"image/capsicum.jpg", price:40},
+
+  {name:"Chips", category:"🍫 Snacks", img:"image/chips.jpg", price:20},
+  {name:"Biscuits", category:"🍫 Snacks", img:"image/biscuits.jpg", price:30},
+  {name:"Chocolate", category:"🍫 Snacks", img:"image/chocolate.jpg", price:50},
+  {name:"Popcorn", category:"🍫 Snacks", img:"image/popcorn.jpg", price:25},
+  {name:"Cookies", category:"🍫 Snacks", img:"image/cookies.jpg", price:40},
+  {name:"Nachos", category:"🍫 Snacks", img:"image/Nachos.jpg", price:35},
+  {name:"Samosa", category:"🍫 Snacks", img:"image/samosa.jpg", price:15},
+  {name:"Cake", category:"🍫 Snacks", img:"image/cake.jpeg", price:200},
+  {name:"Donut", category:"🍫 Snacks", img:"image/donut.jpg", price:30},
+  {name:"Puffs", category:"🍫 Snacks", img:"image/puffs.jpg", price:15},
+
+  {name:"Rice", category:"🍚 Grains", img:"image/rice.jpg", price:60},
+  {name:"Wheat", category:"🍚 Grains", img:"image/wheat.jpeg", price:40},
+  {name:"Flour", category:"🍚 Grains", img:"image/flour.jpg", price:35},
+  {name:"Maida", category:"🍚 Grains", img:"image/maida.jpg", price:35},
+  {name:"Ragi", category:"🍚 Grains", img:"image/ragi.jpg", price:55},
+  {name:"Oats", category:"🍚 Grains", img:"image/oats.jpg", price:90},
+  {name:"Corn", category:"🍚 Grains", img:"image/corn.jpg", price:30},
+  {name:"Barley", category:"🍚 Grains", img:"image/barley.jpg", price:50},
+  {name:"Millets", category:"🍚 Grains", img:"image/millet.jpg", price:60},
+  {name:"Quinoa", category:"🍚 Grains", img:"image/quinoa.jpg", price:180},
+
+  {name:"Sunflower Oil", category:"🛢️ Cooking Essentials", img:"image/sunflower.jpg", price:130},
+  {name:"Coconut Oil", category:"🛢️ Cooking Essentials", img:"image/coconut.jpg", price:160},
+  {name:"Olive Oil", category:"🛢️ Cooking Essentials", img:"image/olive.jpg", price:350},
+  {name:"Groundnut Oil", category:"🛢️ Cooking Essentials", img:"image/groundnut.jpg", price:120},
+  {name:"Salt", category:"🛢️ Cooking Essentials", img:"image/salt.jpg", price:20},
+  {name:"Sugar", category:"🛢️ Cooking Essentials", img:"image/sugar.jpg", price:45},
+  {name:"Turmeric Powder", category:"🛢️ Cooking Essentials", img:"image/turmeric.jpg", price:30},
+  {name:"Chilli Powder", category:"🛢️ Cooking Essentials", img:"image/chilli.jpg", price:35},
+  {name:"Pepper", category:"🛢️ Cooking Essentials", img:"image/pepper.jpg", price:40},
+  {name:"Garam Masala", category:"🛢️ Cooking Essentials", img:"image/Garam.jpg", price:50}
+];
+
+
+const categories = {};
+products.forEach(p => {
+  if (!categories[p.category]) categories[p.category] = [];
+  categories[p.category].push(p);
+});
+async function loadProducts() {
+  try {
+    const res = await fetch("http://localhost:5000/api/products");
+    const products = await res.json();
+
+    let table = document.getElementById("productTable");
+
+    table.innerHTML = "";
+
+    products.forEach(p => {
+      table.innerHTML += `
+        <tr>
+          <td>${p.name}</td>
+          <td>₹${p.price}</td>
+          <td>${p.quantity}</td>
+          <td>${p.category || "-"}</td>
+        </tr>
+      `;
+    });
+
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+window.onload = loadProducts;
+let html = "";
+for (let cat in categories) {
+  html += `<h2 class="category-title">${cat}</h2>`;
+  html += `<div class="product-grid">`;
+  categories[cat].forEach(p => {
+    html += `
+      <div class="product-card" data-name="${p.name.toLowerCase()}">
+        <img src="${p.img}" alt="${p.name}" onerror="this.style.background='#e8f5e9'">
+        <h4>${p.name}</h4>
+        <p class="price">₹${p.price}</p>
+      </div>`;
+  });
+  html += `</div>`;
+}
+document.getElementById("mainContent").innerHTML = html;
+
+
+function filterProducts() {
+  const query = document.getElementById("searchInput").value.toLowerCase();
+  document.querySelectorAll(".product-card").forEach(card => {
+    card.classList.toggle("hidden", !card.dataset.name.includes(query));
+  });
+}
+</script>
+
+</body>
+</html>

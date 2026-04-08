@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Register - EMart</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Poppins', sans-serif; background: #f0f4f8; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+  .form-card { background: white; padding: 40px 36px; width: 360px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; }
+  .logo { font-size: 34px; margin-bottom: 8px; }
+  h2 { font-size: 20px; font-weight: 600; color: #1a1a1a; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: #999; margin-bottom: 26px; }
+  .input-group { margin-bottom: 14px; text-align: left; }
+  .input-group label { display: block; font-size: 13px; font-weight: 500; color: #555; margin-bottom: 6px; }
+  .input-group input { width: 100%; padding: 11px 14px; border: 1.5px solid #e0e0e0; border-radius: 10px; font-family: 'Poppins', sans-serif; font-size: 14px; color: #333; outline: none; transition: border-color 0.2s; }
+  .input-group input:focus { border-color: #1abc9c; }
+  button { width: 100%; padding: 12px; background: #1abc9c; color: white; border: none; border-radius: 10px; font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; margin-top: 6px; transition: background 0.2s; }
+  button:hover { background: #17a589; }
+  button:disabled { background: #aaa; cursor: not-allowed; }
+  .msg { font-size: 13px; margin-top: 12px; min-height: 18px; color: #e74c3c; }
+  .msg.success { color: #1abc9c; }
+  .login-link { font-size: 13px; color: #999; margin-top: 16px; }
+  .login-link a { color: #1abc9c; text-decoration: none; font-weight: 500; }
+</style>
+</head>
+<body>
+
+<div class="form-card">
+  <div class="logo">📝</div>
+  <h2>Create Account</h2>
+  <p class="subtitle">Register to get started</p>
+
+  <div class="input-group">
+    <label>Username</label>
+    <input id="username" type="text" placeholder="Enter username">
+  </div>
+
+  <div class="input-group">
+    <label>Email</label>
+    <input id="email" type="email" placeholder="Enter email">
+  </div>
+
+  <div class="input-group">
+    <label>Password</label>
+    <input id="password" type="password" placeholder="Min. 6 characters with a number">
+  </div>
+
+  <div class="input-group">
+    <label>Confirm Password</label>
+    <input id="confirm" type="password" placeholder="Re-enter password">
+  </div>
+
+  <button onclick="register()" id="regBtn">📝 Register</button>
+  <p class="msg" id="msg"></p>
+  <p class="login-link">Already have an account? <a href="login.html">Login</a></p>
+</div>
+
+<script>
+async function register() {
+  const username = document.getElementById("username").value.trim();
+  const email    = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const confirm  = document.getElementById("confirm").value;
+  const msgEl    = document.getElementById("msg");
+  const btn      = document.getElementById("regBtn");
+
+  msgEl.className = "msg";
+  msgEl.textContent = "";
+
+  // Validation
+  if (!username || !email || !password || !confirm) {
+    msgEl.textContent = "❌ All fields are required!";
+    return;
+  }
+  if (password.length < 6) {
+    msgEl.textContent = "❌ Password must be at least 6 characters!";
+    return;
+  }
+  if (!/\d/.test(password)) {
+    msgEl.textContent = "❌ Password must contain at least one number!";
+    return;
+  }
+  if (password !== confirm) {
+    msgEl.textContent = "❌ Passwords do not match!";
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "Registering...";
+
+  try {
+    // ✅ Send to MongoDB via API
+    const res = await fetch("http://localhost:5000/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, email, password })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      msgEl.textContent = "❌ " + data.error;
+      return;
+    }
+
+    msgEl.className = "msg success";
+    msgEl.textContent = "✅ Registration successful! Redirecting to login...";
+
+    setTimeout(() => { window.location.href = "login.html"; }, 1500);
+
+  } catch (err) {
+    msgEl.textContent = "❌ Failed to connect. Is the server running on port 5000?";
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "📝 Register";
+  }
+}
+</script>
+</body>
+</html>
