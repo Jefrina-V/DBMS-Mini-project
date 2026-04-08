@@ -22,16 +22,15 @@ EMart is a **full-stack web application** designed to digitize and automate the 
 
 ## 🏗️ Architecture
 ┌─────────────────────────────────────────────────────────────┐
-│ PRESENTATION LAYER                                          │ 
-│ HTML / CSS / JavaScript                                     │ 
+│ PRESENTATION LAYER │
+│ HTML / CSS / JavaScript │
 ├─────────────────────────────────────────────────────────────┤
-│ BUSINESS LAYER                                              │   
-│ Node.js / Express.js REST API                               │
+│ BUSINESS LAYER │
+│ Node.js / Express.js REST API │
 ├─────────────────────────────────────────────────────────────┤
-│ DATA LAYER                                                  │
-│ MongoDB Atlas                                               │
+│ DATA LAYER │
+│ MongoDB Atlas │
 └─────────────────────────────────────────────────────────────┘
-
 
 
 ## 🛠️ Technology Stack
