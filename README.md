@@ -66,33 +66,70 @@ EMart is a **full-stack web application** designed to digitize and automate the 
 ## 📁 Project Structure
 emart-inventory-system/
 │
+
 ├── backend/
+
 │ ├── config/
+
 │ │ └── db.js # MongoDB connection
+
 │ ├── controllers/
-│ │ ├── authController.js # Authentication logic
-│ │ ├── productController.js # Product CRUD operations
+
+│ │ ├── authController.js # Authentication 
+logic
+
+│ │ ├── productController.js # Product CRUD 
+
+operations
+
 │ │ └── orderController.js # Order processing with transactions
+
 │ ├── models/
-│ │ ├── user.js # User schema with password hashing
+
+│ │ ├── user.js # User schema with password 
+
+hashing
+
 │ │ ├── product.js # Product schema
-│ │ └── order.js # Order schema with audit logging
+
+│ │ └── order.js # Order schema with audit 
+
+logging
+
 │ ├── routes/
-│ │ ├── authRoute.js # Authentication endpoints
+
+│ │ ├── authRoute.js # Authentication 
+
+endpoints
+
 │ │ ├── productRoute.js # Product endpoints
+
 │ │ └── orderRoute.js # Order endpoints
+
 │ ├── .env # Environment variables
+
 │ ├── package.json # Dependencies
+
 │ └── server.js # Entry point
+
 │
 ├── frontend/
+
 │ ├── login.html # User login page
+
 │ ├── register.html # User registration page
+
 │ ├── dashboard.html # Analytics dashboard
+
 │ ├── products.html # Product catalogue
+
 │ ├── categories.html # Category management
+
 │ ├── add_product.html # Add new order
-│ └── orders.html # Order management & invoices
+
+│ └── orders.html # Order management & 
+invoices
+
 │
 
 
@@ -103,57 +140,108 @@ emart-inventory-system/
 
 📡 **API Endpoints**
 Authentication Routes
+
 Method	Endpoint	Description
+
 POST	/api/auth/register	Register a new user
+
 POST	/api/auth/login	Login existing user
+
 Product Routes
+
 Method	Endpoint	Description
+
 GET	/api/products	Get all products
+
 POST	/api/products	Create a new product
+
 DELETE	/api/products/:id	Delete a product
+
 Order Routes
+
 Method	Endpoint	Description
+
 GET	/api/orders	Get all orders
+
 POST	/api/orders	Create a new order (ACID transaction)
+
 DELETE	/api/orders/:id	Delete an order
+
 POST	/api/orders/eod-reorder	EOD batch processing
 
 💾 **Database Schema**
 User Collection
+
 javascript
+
 {
+
   _id: ObjectId,
+  
   username: String (unique, required),
+  
   email: String (unique, required),
+  
   password: String (hashed),
-  orders: [ObjectId],  // References to Order documents
+  
+  orders: [ObjectId],  // References to Order
+  
+  documents
+  
   createdAt: Date,
+  
   updatedAt: Date
+  
 }
+
 Product Collection
+
 javascript
+
 {
+
   _id: ObjectId,
+  
   name: String (required),
+  
   category: String (required),
+  
   price: Number (min: 0),
+  
   stock: Number (min: 0, default: 0),
+  
   userId: ObjectId  // Reference to User
+  
 }
+
 Order Collection
+
 javascript
+
 {
+
   _id: ObjectId,
+  
   products: [{
+  
     name: String,
+    
     quantity: Number,
+    
     price: Number
+    
   }],
+  
   category: String,
+  
   totalAmount: Number,
+  
   userId: ObjectId,  // Reference to User
+  
   createdAt: Date,
+  
   updatedAt: Date
+  
 }
 
 
